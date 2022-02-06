@@ -52,9 +52,10 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      history: [{ squares: Array(9).fill(null) }],
+      history: [{ squares: Array(9).fill(null), hand: { col: null, row: null }, stepNumber: 0 }],
       stepNumber: 0,
       xIsNext: true,
+      isHistoryOrderAsc: true,
     };
   }
 
@@ -73,6 +74,7 @@ class Game extends React.Component {
           squares: squares,
           hand: hand,
           hander: this.state.xIsNext ? 'X' : 'O',
+          stepNumber: history.length,
         },
       ]),
       stepNumber: history.length,
@@ -88,17 +90,21 @@ class Game extends React.Component {
   }
 
   render() {
-    const history = this.state.history;
+    let history = this.state.history.slice();
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
+    if (!this.state.isHistoryOrderAsc) {
+      history = history.reverse();
+    }
+
     const moves = history.map((step, move) => {
-      const desc = move ? 'Go to move #' + move : 'Go to game start';
-      const hand = step.hand ? `${step.hander}: (${step.hand.col}, ${step.hand.row})` : '';
+      const desc = step.stepNumber === 0 ? 'Go to game start' : `Go to move #${step.stepNumber}`;
+      const hand = step.stepNumber === 0 ? '' : `${step.hander}: (${step.hand.col}, ${step.hand.row})`;
 
       return (
-        <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{`${desc} ${hand}`}</button>
+        <li key={step.stepNumber}>
+          <button onClick={() => this.jumpTo(step.stepNumber)}>{`${desc} ${hand}`}</button>
         </li>
       );
     });
@@ -109,6 +115,9 @@ class Game extends React.Component {
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
+    const historyOrderToggleBtn = (
+      <button onClick={() => this.setState({ isHistoryOrderAsc: !this.state.isHistoryOrderAsc })}>Toggle Order</button>
+    );
 
     return (
       <div className='game'>
@@ -117,6 +126,7 @@ class Game extends React.Component {
         </div>
         <div className='game-info'>
           <div>{status}</div>
+          <div>{historyOrderToggleBtn}</div>
           <ol>{moves}</ol>
         </div>
       </div>
