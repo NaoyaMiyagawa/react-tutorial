@@ -15,29 +15,36 @@ class Board extends React.Component {
     const hand = convertToHand(i);
     const isCurrentHand = this.props.currentHand && checkIsHandSame(hand, this.props.currentHand);
 
-    return <Square value={this.props.squares[i]} isCurrentHand={isCurrentHand} onClick={() => this.props.onClick(i)} />;
+    return (
+      <Square
+        key={i}
+        value={this.props.squares[i]}
+        isCurrentHand={isCurrentHand}
+        onClick={() => this.props.onClick(i)}
+      />
+    );
+  }
+
+  renderRow(rowIndex) {
+    const squaresInRow = Array(3)
+      .fill(0)
+      .map((value, colIndex) => {
+        return this.renderSquare(rowIndex * 3 + colIndex);
+      });
+
+    return (
+      <div key={rowIndex} className='board-row'>
+        {squaresInRow}
+      </div>
+    );
   }
 
   render() {
-    return (
-      <div>
-        <div className='board-row'>
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className='board-row'>
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className='board-row'>
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+    const board = Array(3)
+      .fill(0)
+      .map((value, rowIndex) => this.renderRow(rowIndex));
+
+    return <div>{board}</div>;
   }
 }
 
