@@ -31,10 +31,12 @@ ul {
   text-align: center;
   width: 34px;
 }
-
 .square.square__current {
   font-weight: bold;
   color: rgb(50, 126, 214);
+}
+.square.square__winning {
+  color: rgb(99, 215, 130);
 }
 
 .square:focus {
