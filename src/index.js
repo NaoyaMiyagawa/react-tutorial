@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className='square' onClick={props.onClick}>
+    <button className={`square ${props.isCurrentHand ? 'square__current' : ''}`} onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -12,7 +12,10 @@ function Square(props) {
 
 class Board extends React.Component {
   renderSquare(i) {
-    return <Square value={this.props.squares[i]} onClick={() => this.props.onClick(i)} />;
+    const hand = convertToHand(i);
+    const isCurrentHand = this.props.currentHand && checkIsHandSame(hand, this.props.currentHand);
+
+    return <Square value={this.props.squares[i]} isCurrentHand={isCurrentHand} onClick={() => this.props.onClick(i)} />;
   }
 
   render() {
@@ -56,7 +59,7 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
-    const hand = { row: Math.floor(i / 3) + 1, col: (i % 3) + 1 };
+    const hand = convertToHand(i);
     this.setState({
       history: history.concat([
         {
@@ -103,7 +106,7 @@ class Game extends React.Component {
     return (
       <div className='game'>
         <div className='game-board'>
-          <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
+          <Board squares={current.squares} currentHand={current.hand} onClick={(i) => this.handleClick(i)} />
         </div>
         <div className='game-info'>
           <div>{status}</div>
@@ -136,4 +139,14 @@ function calculateWinner(squares) {
     }
   }
   return null;
+}
+
+function convertToHand(squareIdx) {
+  const hand = { row: Math.floor(squareIdx / 3) + 1, col: (squareIdx % 3) + 1 };
+
+  return hand;
+}
+
+function checkIsHandSame(hand1, hand2) {
+  return hand1.row === hand2.row && hand1.col === hand2.col;
 }
